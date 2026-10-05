@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TX Tax Assistant</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧾</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F7F4;
+    --surface: #FFFFFF;
+    --ink: #17202B;
+    --muted: #5B6673;
+    --rule: #D6DCE3;
+    --blue: #1F4F8F;
+    --blue-ink: #FFFFFF;
+    --field: #E8EFF8;
+    --danger: #A3392B;
+    --ok: #2E6A4A;
+    --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --cond: "IBM Plex Sans Condensed", "Arial Narrow", "IBM Plex Sans", sans-serif;
+    --sidebar: 288px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #12171D; --surface: #1A2129; --ink: #E6EAEE; --muted: #9AA5B1;
+      --rule: #2C3742; --blue: #8FB3E6; --blue-ink: #0E1620; --field: #1F2B3A;
+      --danger: #E58A7B; --ok: #7FC3A0;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font: 16px/1.55 var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: var(--sidebar) 1fr;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  /* ---------- sidebar ---------- */
+  aside {
+    background: var(--surface);
+    border-right: 1px solid var(--rule);
+    display: flex; flex-direction: column;
+    height: 100vh; position: sticky; top: 0;
+  }
+  .brand { padding: 20px 20px 12px; }
+  .brand h1 { font: 600 18px/1.2 var(--sans); margin: 0; }
+  .brand p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: 1px solid var(--rule); background: var(--surface);
+    padding: 9px 14px; border-radius: 8px; cursor: pointer; font-weight: 500;
+  }
+  .btn:hover { border-color: var(--blue); }
+  .btn-primary { background: var(--blue); color: var(--blue-ink); border-color: var(--blue); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .side-actions { padding: 0 16px 16px; }
+  .side-actions .btn { width: 100%; }
+  .docs-head { padding: 8px 20px; font-size: 13px; font-weight: 600; color: var(--muted);
+               border-top: 1px solid var(--rule); padding-top: 16px; }
+  .docs { list-style: none; margin: 0; padding: 0 12px; overflow-y: auto; flex: 1; }
+  .doc {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;
+    padding: 8px; border-radius: 8px;
+  }
+  .doc:hover { background: var(--field); }
+  .doc .state {
+    font: 600 12px/1 var(--cond); letter-spacing: .02em;
+    background: var(--field); color: var(--blue);
+    border: 1px solid var(--rule); padding: 6px 6px; border-radius: 4px;
+  }
+  .doc:hover .state { background: var(--surface); }
+  .doc .name { font: 500 14px/1.3 var(--cond); overflow-wrap: anywhere; }
+  .doc .meta { font-size: 12px; color: var(--muted); }
+  .doc .remove {
+    border: 0; background: none; cursor: pointer; color: var(--muted);
+    width: 28px; height: 28px; border-radius: 6px; opacity: 0;
+  }
+  .doc:hover .remove, .doc .remove:focus-visible { opacity: 1; }
+  .doc .remove:hover { color: var(--danger); background: var(--surface); }
+  .docs-empty { padding: 8px 20px; font-size: 14px; color: var(--muted); }
+  .side-foot { padding: 16px; border-top: 1px solid var(--rule); }
+  .side-foot .btn { width: 100%; }
+
+  /* ---------- main ---------- */
+  main { display: flex; flex-direction: column; height: 100vh; min-width: 0; }
+  .topbar { display: none; align-items: center; gap: 12px; padding: 12px 16px;
+            border-bottom: 1px solid var(--rule); background: var(--surface); }
+  .topbar h1 { font: 600 16px var(--sans); margin: 0; }
+  .menu-btn { border: 1px solid var(--rule); background: none; border-radius: 8px;
+              width: 38px; height: 38px; cursor: pointer; }
+
+  .scroll { flex: 1; overflow-y: auto; }
+  .thread { max-width: 760px; margin: 0 auto; padding: 32px 24px 24px; }
+
+  .empty { padding-top: 12vh; }
+  .empty h2 { font: 600 30px/1.2 var(--sans); margin: 0 0 8px; letter-spacing: -.01em; }
+  .empty p { color: var(--muted); margin: 0 0 24px; max-width: 52ch; }
+  .examples { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  .example {
+    text-align: left; border: 1px solid var(--rule); background: var(--surface);
+    border-radius: 8px; padding: 10px 14px; cursor: pointer;
+  }
+  .example:hover { border-color: var(--blue); }
+
+  .msg { margin: 0 0 28px; }
+  .msg.user {
+    background: var(--field); border: 1px solid var(--rule);
+    border-radius: 10px; padding: 12px 16px; margin-left: 15%;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .msg.bot .steps { font-size: 13px; color: var(--muted); margin: 0 0 8px;
+                    display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .msg.bot .steps span::before { content: "✓ "; color: var(--ok); }
+  .msg.bot .body { overflow-wrap: anywhere; }
+  .msg.bot .body > :first-child { margin-top: 0; }
+  .msg.bot .body > :last-child { margin-bottom: 0; }
+  .msg.bot .body ul, .msg.bot .body ol { padding-left: 22px; }
+  .msg.bot .body li { margin: 4px 0; }
+  .msg.bot .body p { margin: 0 0 10px; }
+  .msg.bot .body code { font-size: .92em; background: var(--field); padding: 1px 5px; border-radius: 4px; }
+  .msg.bot .time { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .msg.note { font-size: 14px; color: var(--muted); font-style: italic; }
+  .msg.error { color: var(--danger); font-size: 15px; }
+
+  /* the one memorable element: citations styled like a form's line box */
+  .cite {
+    display: inline-flex; align-items: stretch; vertical-align: 1px;
+    border: 1px solid var(--blue); border-radius: 4px; overflow: hidden;
+    font: 500 12px/1 var(--cond); text-decoration: none; margin: 0 2px;
+    color: var(--ink); white-space: nowrap;
+  }
+  .cite .pg { background: var(--blue); color: var(--blue-ink); padding: 4px 6px; font-weight: 600; }
+  .cite .fm { padding: 4px 7px; background: var(--surface); }
+  a.cite:hover .fm { background: var(--field); }
+
+  .thinking { display: inline-flex; gap: 5px; padding: 6px 0; }
+  .thinking i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted);
+                animation: blink 1.2s infinite ease-in-out; }
+  .thinking i:nth-child(2) { animation-delay: .15s; }
+  .thinking i:nth-child(3) { animation-delay: .3s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+  /* ---------- composer ---------- */
+  .composer-wrap { padding: 0 24px 20px; }
+  .composer {
+    max-width: 760px; margin: 0 auto;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 12px;
+    padding: 12px 12px 10px 16px;
+  }
+  .composer:focus-within { border-color: var(--blue); }
+  .composer textarea {
+    width: 100%; border: 0; outline: none; resize: none; background: none;
+    max-height: 200px; min-height: 26px; padding: 2px 0; line-height: 1.5;
+  }
+  .composer-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+  .scope { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); min-width: 0; }
+  .scope select {
+    border: 1px solid var(--rule); background: var(--paper); border-radius: 6px;
+    padding: 4px 6px; font-size: 13px; max-width: 220px;
+  }
+  .send {
+    width: 38px; height: 38px; border-radius: 8px; border: 0; cursor: pointer;
+    background: var(--blue); color: var(--blue-ink); flex: none;
+    display: grid; place-items: center;
+  }
+  .send:disabled { opacity: .4; cursor: not-allowed; }
+  .send.stop { background: var(--ink); color: var(--paper); }
+  .hint { max-width: 760px; margin: 8px auto 0; font-size: 12px; color: var(--muted); text-align: center; }
+
+  /* ---------- upload dialog ---------- */
+  dialog {
+    border: 1px solid var(--rule); border-radius: 12px; padding: 0;
+    width: min(460px, calc(100vw - 32px)); background: var(--surface); color: var(--ink);
+  }
+  dialog::backdrop { background: rgb(10 15 20 / .45); }
+  .dlg { padding: 22px; }
+  .dlg h2 { margin: 0 0 4px; font: 600 20px var(--sans); }
+  .dlg > p { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 5px; }
+  .field small { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .field input[type=text] {
+    width: 100%; border: 1px solid var(--rule); border-radius: 6px; padding: 8px 10px;
+    background: var(--paper);
+  }
+  .drop {
+    border: 1.5px dashed var(--rule); border-radius: 8px; padding: 18px; text-align: center;
+    cursor: pointer; background: var(--paper); font-size: 14px; color: var(--muted);
+  }
+  .drop.over, .drop:hover { border-color: var(--blue); color: var(--ink); }
+  .drop strong { color: var(--ink); overflow-wrap: anywhere; }
+  .row2 { display: grid; grid-template-columns: 90px 1fr; gap: 12px; }
+  .dlg-status { min-height: 20px; font-size: 14px; margin: 4px 0 14px; }
+  .dlg-status.err { color: var(--danger); }
+  .dlg-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+    background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px;
+    font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .toast.show { opacity: 1; }
+
+  /* ---------- mobile ---------- */
+  @media (max-width: 820px) {
+    body { grid-template-columns: 1fr; }
+    aside {
+      position: fixed; inset: 0 auto 0 0; width: min(var(--sidebar), 86vw); z-index: 20;
+      transform: translateX(-100%); transition: transform .2s;
+    }
+    body.menu-open aside { transform: none; box-shadow: 0 0 0 100vmax rgb(10 15 20 / .4); }
+    .topbar { display: flex; }
+    .thread { padding: 20px 16px; }
+    .composer-wrap { padding: 0 12px 12px; }
+    .msg.user { margin-left: 8%; }
+    .empty { padding-top: 4vh; }
+    .empty h2 { font-size: 24px; }
+    .doc .remove { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<aside id="sidebar" aria-label="Documents">
+  <div class="brand">
+    <h1>TX Tax Form Assistant</h1>
+    <p>Answers from your tax documents, with the page they came from.</p>
+  </div>
+  <div class="side-actions">
+    <button class="btn" id="newChat" type="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      New chat
+    </button>
+  </div>
+  <div class="docs-head" id="docsHead">Documents</div>
+  <ul class="docs" id="docs" aria-labelledby="docsHead"></ul>
+  <div class="side-foot">
+    <button class="btn btn-primary" id="openUpload" type="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
+      Add document
+    </button>
+  </div>
+</aside>
+
+<main>
+  <div class="topbar">
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Show documents" aria-controls="sidebar">☰</button>
+    <h1>TX Tax Form Assistant</h1>
+  </div>
+
+  <div class="scroll" id="scroll">
+    <div class="thread" id="thread" aria-live="polite">
+      <section class="empty" id="empty">
+        <h2>Ask about your tax documents</h2>
+        <p>Type a question in plain words. Every answer shows the page it came from, so you can check it yourself.</p>
+        <div class="examples" id="examples">
+          <button class="example" type="button">When is form TC-40 due?</button>
+          <button class="example" type="button">What if I need more time to file?</button>
+          <button class="example" type="button">How do I round amounts on my return?</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="composer-wrap">
+    <form class="composer" id="composer">
+      <label for="input" class="sr-only">Your question</label>
+      <textarea id="input" rows="1" placeholder="Ask a question about your tax forms…" autocomplete="off"></textarea>
+      <div class="composer-row">
+        <div class="scope">
+          <label for="scope">Answer from</label>
+          <select id="scope"><option value="">All documents</option></select>
+        </div>
+        <button class="send" id="send" type="submit" aria-label="Send">
+          <svg id="sendIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
+      </div>
+    </form>
+    <p class="hint">Answers can be wrong. Check the cited page before you file.</p>
+  </div>
+</main>
+
+<dialog id="uploadDlg" aria-labelledby="uploadTitle">
+  <form class="dlg" id="uploadForm" method="dialog">
+    <h2 id="uploadTitle">Add a document</h2>
+    <p>Upload a tax form or its instructions as a PDF. Once it's added, you can ask questions about it.</p>
+
+    <div class="field">
+      <span class="sr-only" id="fileLabel">PDF file</span>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-labelledby="fileLabel dropText">
+        <span id="dropText">Drop a PDF here, or <strong>choose a file</strong></span>
+      </div>
+      <input type="file" id="file" accept="application/pdf,.pdf" hidden>
+      <small>Up to 25 MB. Scanned images without selectable text can't be read.</small>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="state">State</label>
+        <input type="text" id="state" maxlength="2" placeholder="UT" required
+               autocapitalize="characters" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="formName">Form name</label>
+        <input type="text" id="formName" placeholder="TC-40-instructions" required spellcheck="false">
+      </div>
+    </div>
+
+    <div class="dlg-status" id="uploadStatus" role="status"></div>
+    <div class="dlg-actions">
+      <button class="btn" type="button" id="cancelUpload">Cancel</button>
+      <button class="btn btn-primary" type="submit" id="doUpload">Add document</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const state = { threadId: null, busy: false, controller: null, docs: [] };
+
+// ---------- helpers ----------
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 3200);
+}
+function prettyForm(form) { return form.replace(/-instructions$/i, " instructions").replace(/_/g, " "); }
+function scrollDown() { const s = $("scroll"); s.scrollTop = s.scrollHeight; }
+
+// Turn [UT TC-40-instructions, p.4-5] or 【...】 into a clickable chip that opens the PDF page.
+const CITE_RE = /[\[【(]\s*([A-Z]{2})\s+([^\]】),]+?),\s*((?:pp?\.?|pages?)\s*\d[^\]】)]*)[\]】)]/g;
+function renderAnswer(text) {
+  const norm = text.replace(/[\u2010-\u2015\u2212]/g, "-").replace(/[\u00a0\u202f]/g, " ");
+  const chips = [];
+  const withTokens = norm.replace(CITE_RE, (_, st, form, pages) => {
+    form = form.trim();
+    const nums = pages.match(/\d+/g) || [];
+    const first = nums[0];
+    const label = nums.length > 1 && /-/.test(pages) ? `p.${nums[0]}-${nums[1]}` : `p.${nums.join(", ")}`;
+    const href = `/files/${encodeURIComponent(`${st}_${form}.pdf`)}#page=${first}`;
+    chips.push(`<a class="cite" href="${href}" target="_blank" rel="noopener" title="Open ${escapeHtml(st + " " + prettyForm(form))} at page ${first}"><span class="pg">${escapeHtml(label)}</span><span class="fm">${escapeHtml(st + " " + prettyForm(form))}</span></a>`);
+    return `@@CITE${chips.length - 1}@@`;
+  });
+  const html = miniMarkdown(withTokens);
+  return html.replace(/@@CITE(\d+)@@/g, (_, i) => chips[+i]);
+}
+
+// Small Markdown renderer (bold, italic, code, lists, paragraphs). Text is
+// escaped first, so model output can never inject HTML. No CDN needed.
+function inline(s) {
+  return s
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, "$1<em>$2</em>");
+}
+function miniMarkdown(text) {
+  const lines = escapeHtml(text).split(/\r?\n/);
+  let out = "", list = null, para = [];
+  const flushPara = () => { if (para.length) { out += `<p>${para.map(inline).join("<br>")}</p>`; para = []; } };
+  const closeList = () => { if (list) { out += `</${list}>`; list = null; } };
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    const ul = line.match(/^\s*[-*•]\s+(.*)$/), ol = line.match(/^\s*\d+[.)]\s+(.*)$/);
+    const h = line.match(/^#{1,4}\s+(.*)$/);
+    if (ul || ol) {
+      flushPara();
+      const type = ul ? "ul" : "ol";
+      if (list !== type) { closeList(); out += `<${type}>`; list = type; }
+      out += `<li>${inline((ul || ol)[1])}</li>`;
+    } else if (h) {
+      flushPara(); closeList(); out += `<p><strong>${inline(h[1])}</strong></p>`;
+    } else if (!line.trim()) {
+      flushPara(); closeList();
+    } else {
+      closeList(); para.push(line);
+    }
+  }
+  flushPara(); closeList();
+  return out;
+}
+
+// Describe tool calls in plain words.
+function describeStep(call) {
+  const name = call.split("(")[0];
+  const arg = (key) => { const m = call.match(new RegExp(key + "='([^']*)'")); return m ? m[1] : ""; };
+  if (name === "search_tax_instructions") return `Searched ${arg("state") || "all"} documents for “${arg("query")}”`;
+  if (name === "calculate") return `Calculated ${arg("expression")}`;
+  if (name === "validate_check_digit") return `Checked number ${arg("number")}`;
+  if (name === "list_loaded_forms") return "Looked up available documents";
+  return name;
+}
+
+// ---------- messages ----------
+function hideEmpty() { $("empty").hidden = true; }
+function addUser(text) {
+  hideEmpty();
+  const el = document.createElement("div");
+  el.className = "msg user"; el.textContent = text;
+  $("thread").appendChild(el); scrollDown();
+}
+function addThinking() {
+  const el = document.createElement("div");
+  el.className = "msg bot";
+  el.innerHTML = `<div class="thinking" aria-label="Looking through your documents"><i></i><i></i><i></i></div>`;
+  $("thread").appendChild(el); scrollDown();
+  return el;
+}
+function fillBot(el, data) {
+  const steps = (data.tools_used || []).map(describeStep);
+  el.innerHTML =
+    (steps.length ? `<div class="steps">${steps.map(s => `<span>${escapeHtml(s)}</span>`).join("")}</div>` : "") +
+    `<div class="body">${renderAnswer(data.answer || "")}</div>` +
+    `<div class="time">Answered in ${data.seconds}s</div>`;
+  scrollDown();
+}
+function replaceWith(el, cls, text) { el.className = "msg " + cls; el.textContent = text; }
+
+// ---------- sending / stopping ----------
+const input = $("input"), sendBtn = $("send");
+function setBusy(b) {
+  state.busy = b;
+  sendBtn.classList.toggle("stop", b);
+  sendBtn.setAttribute("aria-label", b ? "Stop" : "Send");
+  $("sendIcon").innerHTML = b
+    ? '<rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor" stroke="none"/>'
+    : '<path d="M12 19V5M5 12l7-7 7 7"/>';
+}
+
+async function send(text) {
+  text = text.trim();
+  if (!text || state.busy) return;
+  addUser(text);
+  input.value = ""; autosize();
+  const bubble = addThinking();
+  state.controller = new AbortController();
+  setBusy(true);
+  try {
+    const res = await fetch("/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: text, thread_id: state.threadId, document: $("scope").value || null }),
+      signal: state.controller.signal,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.detail || `Request failed (${res.status}).`);
+    state.threadId = data.thread_id;
+    fillBot(bubble, data);
+  } catch (e) {
+    if (e.name === "AbortError") replaceWith(bubble, "note", "Stopped. Ask again whenever you're ready.");
+    else replaceWith(bubble, "error", typeof e.message === "string" ? e.message : "Something went wrong.");
+  } finally {
+    state.controller = null;
+    setBusy(false);
+    input.focus();
+  }
+}
+
+$("composer").addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (state.busy) state.controller?.abort();
+  else if (input.value.trim()) send(input.value);
+  else input.focus();
+});
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!state.busy) send(input.value); }
+});
+function autosize() {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 200) + "px";
+}
+input.addEventListener("input", autosize);
+$("examples").addEventListener("click", (e) => { if (e.target.matches(".example")) send(e.target.textContent); });
+
+$("newChat").addEventListener("click", () => {
+  state.controller?.abort();
+  state.threadId = null;
+  [...$("thread").querySelectorAll(".msg")].forEach(m => m.remove());
+  $("empty").hidden = false;
+  document.body.classList.remove("menu-open");
+  input.focus();
+});
+
+// ---------- documents ----------
+async function loadDocs() {
+  try {
+    const res = await fetch("/documents");
+    state.docs = res.ok ? await res.json() : [];
+  } catch { state.docs = []; }
+  const list = $("docs");
+  list.innerHTML = "";
+  if (!state.docs.length) {
+    list.innerHTML = `<li class="docs-empty">No documents yet. Add a PDF to start asking questions.</li>`;
+  }
+  for (const d of state.docs) {
+    const li = document.createElement("li");
+    li.className = "doc";
+    li.innerHTML = `
+      <span class="state" aria-hidden="true">${escapeHtml(d.state)}</span>
+      <span><span class="name">${escapeHtml(prettyForm(d.form))}</span><br>
+            <span class="meta">${d.pages} ${d.pages === 1 ? "page" : "pages"}</span></span>
+      <button class="remove" type="button" aria-label="Remove ${escapeHtml(d.state + " " + prettyForm(d.form))}" title="Remove">✕</button>`;
+    li.querySelector(".remove").addEventListener("click", () => removeDoc(d));
+    list.appendChild(li);
+  }
+  const scope = $("scope"), current = scope.value;
+  scope.innerHTML = `<option value="">All documents</option>` +
+    state.docs.map(d => `<option value="${escapeHtml(d.source_file)}">${escapeHtml(d.state + " " + prettyForm(d.form))}</option>`).join("");
+  if ([...scope.options].some(o => o.value === current)) scope.value = current;
+}
+
+async function removeDoc(d) {
+  const label = `${d.state} ${prettyForm(d.form)}`;
+  if (!confirm(`Remove ${label}? The assistant will no longer answer from it.`)) return;
+  const res = await fetch(`/documents/${encodeURIComponent(d.source_file)}`, { method: "DELETE" });
+  if (res.ok) { toast(`Removed ${label}`); loadDocs(); }
+  else toast(`Couldn't remove ${label}`);
+}
+
+// ---------- upload dialog ----------
+const dlg = $("uploadDlg"), fileInput = $("file"), drop = $("drop");
+let chosenFile = null;
+
+function guessFromName(name) {
+  const stem = name.replace(/\.pdf$/i, "");
+  const m = stem.match(/^([A-Za-z]{2})[_\s-]+(.+)$/);
+  if (m) return { st: m[1].toUpperCase(), form: m[2] };
+  return { st: "", form: stem };
+}
+function chooseFile(f) {
+  if (!f) return;
+  if (!/\.pdf$/i.test(f.name) && f.type !== "application/pdf") { setStatus("Choose a PDF file.", true); return; }
+  chosenFile = f;
+  $("dropText").innerHTML = `<strong>${escapeHtml(f.name)}</strong> (${(f.size / 1048576).toFixed(1)} MB)`;
+  const g = guessFromName(f.name);
+  if (g.st && !$("state").value) $("state").value = g.st;
+  if (!$("formName").value) $("formName").value = g.form.replace(/\s+/g, "-");
+  setStatus("");
+}
+function setStatus(msg, err = false) { const s = $("uploadStatus"); s.textContent = msg; s.classList.toggle("err", err); }
+
+$("openUpload").addEventListener("click", () => {
+  chosenFile = null; fileInput.value = "";
+  $("dropText").innerHTML = "Drop a PDF here, or <strong>choose a file</strong>";
+  $("state").value = ""; $("formName").value = ""; setStatus("");
+  $("doUpload").disabled = false;
+  dlg.showModal();
+});
+$("cancelUpload").addEventListener("click", () => dlg.close());
+drop.addEventListener("click", () => fileInput.click());
+drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); } });
+fileInput.addEventListener("change", () => chooseFile(fileInput.files[0]));
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", (e) => chooseFile(e.dataTransfer.files[0]));
+$("state").addEventListener("input", (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ""); });
+
+$("uploadForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const st = $("state").value.trim(), form = $("formName").value.trim();
+  if (!chosenFile) return setStatus("Choose a PDF first.", true);
+  if (!/^[A-Z]{2}$/.test(st)) return setStatus("Enter the two-letter state code, like UT.", true);
+  if (!form) return setStatus("Enter a form name, like TC-40-instructions.", true);
+  if (state.docs.some(d => d.state === st && d.form.toLowerCase() === form.replace(/[^A-Za-z0-9-]+/g, "-").toLowerCase())
+      && !confirm(`${st} ${form} is already added. Replace it with this file?`)) return;
+
+  const body = new FormData();
+  body.append("file", chosenFile); body.append("state", st); body.append("form", form);
+  $("doUpload").disabled = true;
+  setStatus("Reading the document. Large PDFs can take a minute…");
+  try {
+    const res = await fetch("/documents", { method: "POST", body });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.detail || `Upload failed (${res.status}).`);
+    dlg.close();
+    toast(`Added ${data.state} ${prettyForm(data.form)}: ${data.pages} ${data.pages === 1 ? "page" : "pages"}`);
+    await loadDocs();
+    $("scope").value = data.source_file;
+  } catch (err) {
+    setStatus(err.message, true);
+  } finally {
+    $("doUpload").disabled = false;
+  }
+});
+
+// ---------- mobile menu ----------
+$("menuBtn").addEventListener("click", () => document.body.classList.toggle("menu-open"));
+document.addEventListener("click", (e) => {
+  if (document.body.classList.contains("menu-open") && !e.target.closest("aside") && !e.target.closest("#menuBtn"))
+    document.body.classList.remove("menu-open");
+});
+
+loadDocs();
+autosize();  // the browser may restore text after a page reload
+input.focus();
+</script>
+</body>
+</html>
