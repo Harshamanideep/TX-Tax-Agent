@@ -1,0 +1,40 @@
+
+OVERALL: 8/30 passed (27%)
+  keywords  13/30 (43%)
+  citation  10/24 (42%)
+  tools     25/26 (96%)
+
+By category:
+  calculator    1/1
+  check-digit   1/2
+  list          0/1
+  memory        0/2
+  multi-tool    0/1
+  search        5/21
+  unanswerable  1/2
+
+Avg latency: 19.4s   Avg tool calls: 1.5
+
+Failures:
+  due-calendar         failed keywords, citation missing: ['april 15']
+  extension-deadline   failed keywords missing: ['october 15 / oct. 15 / oct 15']
+  extension-pay        failed citation
+  extension-form       failed citation
+  rounding             failed keywords missing: ['50 cents']
+  withholding-form     failed keywords missing: ['tc-40w']
+  prepay-coupon        failed keywords missing: ['tc-546']
+  payment-coupon       failed keywords, citation missing: ['tc-547']
+  quarterly            failed citation
+  deceased-refund      failed keywords, citation missing: ['tc-131']
+  injured-spouse       failed keywords, citation, tools missing: ['8379']
+  send-w2              failed citation
+  power-of-attorney    failed keywords missing: ['tc-737']
+  fiscal-eligibility   failed keywords, citation missing: ['only if / federal fiscal year filer / must be a federal']
+  domicile-test1       failed keywords, citation missing: ['k-12 / public school']
+  grocery-rate         failed keywords, citation missing: ['3% / 3 percent / .03']
+  search-plus-calc     failed citation
+  check-invalid        failed keywords missing: ['invalid / not valid']
+  list-forms           failed keywords missing: ['tc-40']
+  refuse-2030          failed keywords missing: ["couldn't find / could not find / only / 2025 / don't have / do not have"]
+  memory-1             failed keywords, citation missing: ['april 15']
+  memory-2             failed keywords, citation missing: ['october 15 / oct. 15 / oct 15']

@@ -1,0 +1,24 @@
+
+OVERALL: 24/30 passed (80%)
+  keywords  27/30 (90%)
+  citation  21/24 (88%)
+  tools     26/26 (100%)
+
+By category:
+  calculator    1/1
+  check-digit   2/2
+  list          1/1
+  memory        1/2
+  multi-tool    1/1
+  search        16/21
+  unanswerable  2/2
+
+Avg latency: 19.6s   Avg tool calls: 1.3
+
+Failures:
+  due-calendar         failed citation
+  rounding             failed keywords missing: ['50 cents / 0.50 / 50¢ / .50']
+  payment-coupon       failed keywords missing: ['tc-547']
+  injured-spouse       failed citation
+  fiscal-eligibility   failed keywords missing: ['only if / only when / federal fiscal year filer / must be a federal / also file']
+  memory-1             failed citation

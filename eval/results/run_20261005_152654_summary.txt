@@ -1,0 +1,9 @@
+
+OVERALL: 0/1 passed (0%)
+
+By category:
+  search        0/1
+
+Failures:
+  due-calendar         failed error
+      error: Error calling model 'gemini-3.8-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quo

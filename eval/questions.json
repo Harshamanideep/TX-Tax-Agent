@@ -1,0 +1,520 @@
+[
+ {
+  "id": "due-calendar",
+  "category": "search",
+  "question": "When is form TC-40 due for calendar year filers?",
+  "must_include": [
+   [
+    "april 15"
+   ]
+  ],
+  "pages": [
+   4
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "due-fiscal",
+  "category": "search",
+  "question": "When is TC-40 due if I file on a fiscal year basis?",
+  "must_include": [
+   [
+    "15th day"
+   ],
+   [
+    "fourth month"
+   ]
+  ],
+  "pages": [
+   4,
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "extension-deadline",
+  "category": "search",
+  "question": "What is the deadline for extension returns?",
+  "must_include": [
+   [
+    "october 15",
+    "oct. 15",
+    "oct 15"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "extension-pay",
+  "category": "search",
+  "question": "Does the automatic extension also give me more time to pay my tax?",
+  "must_include": [
+   [
+    "not an extension",
+    "does not",
+    "doesn't",
+    "not extend",
+    "no"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "extension-form",
+  "category": "search",
+  "question": "Do I need to file a form to get the automatic extension?",
+  "must_include": [
+   [
+    "do not need",
+    "don't need",
+    "not need",
+    "no extension form",
+    "no"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "rounding",
+  "category": "search",
+  "question": "How do I round amounts on the return?",
+  "must_include": [
+   [
+    "50 cents",
+    "0.50",
+    "50¢",
+    ".50"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "negative-numbers",
+  "category": "search",
+  "question": "How do I report negative numbers on the return?",
+  "must_include": [
+   [
+    "minus"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "pay-online",
+  "category": "search",
+  "question": "Where can I pay my Utah income tax online?",
+  "must_include": [
+   [
+    "tap.utah.gov"
+   ]
+  ],
+  "pages": [
+   5,
+   8,
+   34
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "withholding-form",
+  "category": "search",
+  "question": "Which form do I use to report my withholding tax information?",
+  "must_include": [
+   [
+    "tc-40w"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "prepay-coupon",
+  "category": "search",
+  "question": "Which coupon do I mail with an individual income tax prepayment?",
+  "must_include": [
+   [
+    "tc-546"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "payment-coupon",
+  "category": "search",
+  "question": "If I pay my tax due by check, which payment coupon do I include?",
+  "must_include": [
+   [
+    "tc-547"
+   ]
+  ],
+  "pages": [
+   5,
+   34
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "quarterly",
+  "category": "search",
+  "question": "Does Utah require quarterly estimated tax payments?",
+  "must_include": [
+   [
+    "does not require",
+    "not require",
+    "doesn't require",
+    "no"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "deceased-refund",
+  "category": "search",
+  "question": "Which form do I attach to claim a refund for a deceased taxpayer?",
+  "must_include": [
+   [
+    "tc-131"
+   ]
+  ],
+  "pages": [
+   5,
+   15
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "injured-spouse",
+  "category": "search",
+  "question": "Which federal form do I attach if I'm claiming relief as an injured spouse?",
+  "must_include": [
+   [
+    "8379"
+   ]
+  ],
+  "pages": [
+   5,
+   7
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "send-w2",
+  "category": "search",
+  "question": "Should I send my W-2 forms with my Utah return?",
+  "must_include": [
+   [
+    "do not send",
+    "don't send",
+    "should not",
+    "not send",
+    "no"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "prepay-percent",
+  "category": "search",
+  "question": "How much do I have to prepay to avoid penalties when filing on extension?",
+  "must_include": [
+   [
+    "90"
+   ],
+   [
+    "100"
+   ]
+  ],
+  "pages": [
+   5
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "power-of-attorney",
+  "category": "search",
+  "question": "Which form do I submit to change a designee's authorization?",
+  "must_include": [
+   [
+    "tc-737"
+   ]
+  ],
+  "pages": [
+   14
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "fiscal-end-field",
+  "category": "search",
+  "question": "What do I enter in the fiscal year end date field if I'm a calendar year filer?",
+  "must_include": [
+   [
+    "blank"
+   ]
+  ],
+  "pages": [
+   15
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "fiscal-eligibility",
+  "category": "search",
+  "question": "Can I be a Utah fiscal year filer if I'm not a federal fiscal year filer?",
+  "must_include": [
+   [
+    "federal"
+   ],
+   [
+    "no",
+    "cannot",
+    "can't",
+    "only"
+   ]
+  ],
+  "pages": [
+   7
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "domicile-test1",
+  "category": "search",
+  "question": "Under domicile Test 1, how does claiming a child tax credit affect Utah domicile?",
+  "must_include": [
+   [
+    "k-12",
+    "public school"
+   ]
+  ],
+  "pages": [
+   5,
+   6
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "grocery-rate",
+  "category": "search",
+  "question": "What is the use tax rate on grocery food purchases?",
+  "must_include": [
+   [
+    "3%",
+    "3 percent",
+    ".03"
+   ]
+  ],
+  "pages": [
+   12
+  ],
+  "tools": [
+   "search_tax_instructions"
+  ]
+ },
+ {
+  "id": "calc-percent",
+  "category": "calculator",
+  "question": "What is 4.5% of 52000?",
+  "must_include": [
+   [
+    "2340"
+   ]
+  ],
+  "tools": [
+   "calculate"
+  ]
+ },
+ {
+  "id": "search-plus-calc",
+  "category": "multi-tool",
+  "question": "Using the grocery food use tax rate from the instructions, how much use tax would I owe on $200 of grocery food?",
+  "must_include": [
+   [
+    "$6",
+    "6.00",
+    "6 dollars"
+   ]
+  ],
+  "pages": [
+   12
+  ],
+  "tools": [
+   "search_tax_instructions",
+   "calculate"
+  ]
+ },
+ {
+  "id": "check-valid",
+  "category": "check-digit",
+  "question": "Is 123456785 a valid check number?",
+  "must_include": [
+   [
+    "valid"
+   ]
+  ],
+  "must_exclude": [
+   "invalid",
+   "not valid"
+  ],
+  "tools": [
+   "validate_check_digit"
+  ]
+ },
+ {
+  "id": "check-invalid",
+  "category": "check-digit",
+  "question": "Is 123456786 a valid check number?",
+  "must_include": [
+   [
+    "invalid",
+    "not valid",
+    "not a valid"
+   ]
+  ],
+  "tools": [
+   "validate_check_digit"
+  ]
+ },
+ {
+  "id": "list-forms",
+  "category": "list",
+  "question": "Which forms do you have loaded?",
+  "must_include": [
+   [
+    "tc-40"
+   ]
+  ],
+  "tools": [
+   "list_loaded_forms"
+  ]
+ },
+ {
+  "id": "refuse-nebraska",
+  "category": "unanswerable",
+  "question": "What is the Nebraska R&D credit rate?",
+  "must_include": [
+   [
+    "couldn't find",
+    "could not find",
+    "not loaded",
+    "don't have",
+    "do not have",
+    "only have"
+   ]
+  ]
+ },
+ {
+  "id": "refuse-2030",
+  "category": "unanswerable",
+  "question": "What is the Utah income tax due date for tax year 2030?",
+  "must_include": [
+   [
+    "couldn't find",
+    "could not find",
+    "only",
+    "2025",
+    "don't have",
+    "do not have"
+   ]
+  ],
+  "must_exclude": [
+   "april 15, 2031"
+  ]
+ },
+ {
+  "id": "memory-1",
+  "category": "memory",
+  "thread": "memory",
+  "question": "When is form TC-40 due for calendar year filers?",
+  "must_include": [
+   [
+    "april 15"
+   ]
+  ],
+  "pages": [
+   4
+  ]
+ },
+ {
+  "id": "memory-2",
+  "category": "memory",
+  "thread": "memory",
+  "question": "And what if I get an extension?",
+  "must_include": [
+   [
+    "october 15",
+    "oct. 15",
+    "oct 15"
+   ]
+  ],
+  "pages": [
+   5
+  ]
+ }
+]
