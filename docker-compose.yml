@@ -1,0 +1,11 @@
+services:
+  agent:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file: .env          # API keys stay out of the image
+    volumes:
+      - chroma:/app/chroma_db   # keeps the vector store between restarts
+
+volumes:
+  chroma:
